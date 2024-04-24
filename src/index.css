@@ -210,6 +210,10 @@ body {
   letter-spacing: -0.25px;
   flex-grow: 1;
 }
+.todo-item p.complete {
+  text-decoration: line-through;
+  color: var(--clr-neutral-600);
+}
 .btn-container {
   display: flex;
   gap: 0.765rem;

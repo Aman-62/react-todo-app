@@ -1,27 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import List from "./List";
 
-const list = [
-  {
-    id: 1,
-    title: "Learn HTML",
-    // active | complete
-    status: "complete",
-  },
-  {
-    id: 2,
-    title: "Learn JS",
-    status: "active",
-  },
-  {
-    id: 3,
-    title: "Learn Tailwind",
-    status: "active",
-  },
-];
+const getLocalStorage = () => {
+  let todos = localStorage.getItem("todos");
+  if (todos) {
+    return (todos = JSON.parse(localStorage.getItem("todos")));
+  } else {
+    return [];
+  }
+};
 
 function App() {
-  const [todos, setTodos] = useState(list);
+  const [todos, setTodos] = useState(getLocalStorage());
   const [name, setName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -46,7 +36,17 @@ function App() {
     if (!name) {
       alert("Please write todo");
     } else if (name && isEditing) {
-      // todo: add edit functionality
+      const newTodosList = todos.map(function (todo) {
+        if (todo.id === editId) {
+          return { ...todo, title: name };
+        }
+        return todo;
+      });
+
+      setTodos(newTodosList);
+
+      setIsEditing(false);
+      setEditId(null);
     } else {
       const newTodo = {
         id: new Date().getTime().toString(),
@@ -57,6 +57,25 @@ function App() {
       setName("");
     }
   };
+  const editItem = (id) => {
+    const specificTodo = todos.find((todo) => todo.id === id);
+    setIsEditing(true);
+    setEditId(specificTodo.id);
+    setName(specificTodo.title);
+  };
+
+  // todo complete filter
+  const handleFilter = (e) => {
+    let btnClicked = e.target.textContent;
+    if (btnClicked === "all") {
+    } else if (btnClicked === "active") {
+    } else if (btnClicked === "completed") {
+    }
+  };
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   return (
     <>
@@ -82,18 +101,22 @@ function App() {
                   onChange={handleChange}
                 />
                 <button type="submit" className="submit-btn">
-                  submit
+                  {isEditing ? "edit" : "submit"}
                 </button>
               </div>
             </form>
 
             {todos.length >= 1 ? (
               <div className="todo-container">
-                <List items={todos} removeItem={removeItem} />
+                <List
+                  items={todos}
+                  removeItem={removeItem}
+                  editItem={editItem}
+                />
                 <div className="todo-container-footer">
                   <p>{todos.length} items left</p>
 
-                  <div className="btn-container">
+                  <div className="btn-container" onClick={handleFilter}>
                     <button className="show-all-btn">all</button>
                     <button className="show-active-btn">active</button>
                     <button className="show-completed-btn">completed</button>
