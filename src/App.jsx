@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import List from "./List";
+import { ToastContainer, toast } from "react-toastify";
 
 const getLocalStorage = () => {
   let todos = localStorage.getItem("todos");
@@ -18,14 +19,14 @@ function App() {
 
   const handleClearList = () => {
     setTodos([]);
+    toast.error("All Todos Deleted!", { theme: "dark", draggable: true });
   };
   const removeItem = (id) => {
-    // [1, 2, 3, 4]
     const newTodos = todos.filter(function (todo) {
       return todo.id != id;
     });
     setTodos(newTodos);
-    console.log("removeItem " + id);
+    toast.error("Todo Deleted!", { theme: "dark", draggable: true });
   };
   const handleChange = (e) => {
     setName(e.target.value);
@@ -34,7 +35,7 @@ function App() {
     e.preventDefault();
 
     if (!name) {
-      alert("Please write todo");
+      toast.warning("Please Enter Todo", { theme: "dark", draggable: true });
     } else if (name && isEditing) {
       const newTodosList = todos.map(function (todo) {
         if (todo.id === editId) {
@@ -47,6 +48,8 @@ function App() {
 
       setIsEditing(false);
       setEditId(null);
+      setName("");
+      toast.success("Todo Edited!", { theme: "dark", draggable: true });
     } else {
       const newTodo = {
         id: new Date().getTime().toString(),
@@ -55,6 +58,7 @@ function App() {
       };
       setTodos([...todos, newTodo]);
       setName("");
+      toast.success("Todo Submitted!", { theme: "dark", draggable: true });
     }
   };
   const editItem = (id) => {
@@ -89,6 +93,7 @@ function App() {
       </header>
 
       <main>
+        <ToastContainer />
         <section>
           <div className="container">
             <form className="todo-form" onSubmit={handleSubmit}>
